@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        # Define environment variables here
+        // Define environment variables here
         AWS_REGION = 'ap-south-1'
         AWS_ACCOUNT_ID = '065194293675'
         ECR_REGISTRY = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
@@ -20,7 +20,7 @@ pipeline {
         stage('Build and push AUTH Docker image') {
             steps {
                 script {
-                    # Build the Docker image
+                    // Build the Docker image
                     sh '''
                     
                     # Build the Docker image for streaming-auth
