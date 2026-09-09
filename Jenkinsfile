@@ -3,9 +3,9 @@ pipeline {
 
     environment {
         // Define environment variables here
-        AWS_REGION = 'ap-south-1',
-        AWS_ACCOUNT_ID = '065194293675',
-        ECR_REGISTRY = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com",
+        AWS_REGION = 'ap-south-1'
+        AWS_ACCOUNT_ID = '065194293675'
+        ECR_REGISTRY = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
         IMAGE_TAG = 'jenkins-${BUILD_NUMBER}'
     }
 
@@ -25,6 +25,7 @@ pipeline {
                     // Build the Docker image for streaming-auth
                     docker build \
                     -t ${ECR_REGISTRY}/streaming-auth:${IMAGE_TAG} \
+                    -f ./backend/authService/Dockerfile \
                     ./backend/authService
 
                     // Authenticate with AWS ECR
@@ -47,9 +48,6 @@ pipeline {
                     -t ${ECR_REGISTRY}/streaming-streaming:${IMAGE_TAG} \
                     -f ./backend/streamingService/Dockerfile \
                     ./backend
-                    
-                    aws ecr get-login-password --region ${AWS_REGION} | 
-                    docker login --username AWS --password-stdin ${ECR_REGISTRY}
 
                     docker push ${ECR_REGISTRY}/streaming-streaming:${IMAGE_TAG}
                    ''' 
