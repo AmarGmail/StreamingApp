@@ -1,0 +1,131 @@
+# Default values for streamingapp Helm Chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  # This sets the namespace for the chart - default is the current namespace
+  imageRegistry: "065194293675.dkr.ecr.ap-south-1.amazonaws.com"
+  imagePullPolicy: IfNotPresent
+
+serviceAccount:
+  create: false
+  name: ""
+  
+# Auth Service
+auth:
+
+  replicaCount: 1
+
+  image:
+    repository: streaming-auth
+    tag: "1.0.0"
+  service:
+    type: ClusterIP
+    port: 3001
+    targetPort: 3001
+  # Limit the resources and requests used by the auth service.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+ 
+# Streaming Service
+streaming:
+  replicaCount: 1
+
+  image:
+    repository: streaming-streaming
+    tag: "1.0.0"
+  service:
+    type: ClusterIP
+    port: 3002
+    targetPort: 3002
+# Streaming Service resource limits and requests
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# Admin Service
+admin:
+  replicaCount: 1
+  image:
+    repository: streaming-admin
+    tag: "1.0.0"
+  service:
+    type: ClusterIP
+    port: 3003
+    targetPort: 3003
+# admin Service resource limits and requests
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# Chat Service
+chat:
+  replicaCount: 1
+  image:
+    repository: streaming-chat
+    tag: "1.0.0"
+  service:
+    type: ClusterIP
+    port: 3004
+    targetPort: 3004
+# chat Service resource limits and requests
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# Frontend Service
+frontend:
+  replicaCount: 1
+  image:
+    repository: streaming-frontend
+    tag: "1.0.0"
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 80
+# frontend Service resource limits and requests
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+
+# MongoDB Service
+mongodb:
+  image:
+    repository: mongo
+    tag: "6"
+  service:
+    type: ClusterIP
+    port: 27017
+    targetPort: 27017
+
+  persistence:
+    enabled: true
+    storageClass: "gp2"
+    accessMode: ReadWriteOnce
+    size: 1Gi
+
+#JWTSecret
+secret:
+  jwtSecret: ""
