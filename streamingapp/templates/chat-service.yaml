@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "streamingapp.fullname" . }}-chat
+  labels:
+    {{- include "streamingapp.labels" . | nindent 4 }}
+    app.kubernetes.io/component: chat
+spec:
+  type: {{ .Values.chat.service.type }}
+  ports:
+    - port: {{ .Values.chat.service.port }}
+      targetPort: {{ .Values.chat.service.targetPort }}
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ include "streamingapp.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: chat

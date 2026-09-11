@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "streamingapp.fullname" . }}-config
+  labels:
+    {{- include "streamingapp.labels" . | nindent 4 }}
+data:
+  PORT: "{{ .Values.auth.service.targetPort }}"
+  MONGO_URI: "mongodb://{{ include "streamingapp.fullname" . }}-mongodb:{{ .Values.mongodb.service.port }}/streamingapp"
+  CLIENT_URLS: "http://localhost:3000,http://k8s-streamingapp-ac32464491-253590889.ap-south-1.elb.amazonaws.com"

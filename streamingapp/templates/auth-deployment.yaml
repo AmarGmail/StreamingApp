@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "streamingapp.fullname" . }}-auth
+  labels:
+    {{- include "streamingapp.labels" . | nindent 4 }}
+    app.kubernetes.io/component: auth
+spec:
+  replicas: {{ .Values.auth.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "streamingapp.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: auth
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "streamingapp.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: auth
+    spec:
+      containers:
+        - name: auth
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.auth.image.repository }}:{{ .Values.auth.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.auth.service.targetPort }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.auth.resources | nindent 12 }}
+          env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "streamingapp.fullname" . }}-config
+                  key: PORT
+
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "streamingapp.fullname" . }}-config
+                  key: MONGO_URI
+
+            - name: CLIENT_URLS
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "streamingapp.fullname" . }}-config
+                  key: CLIENT_URLS
+
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "streamingapp.fullname" . }}-secret
+                  key: JWT_SECRET
+
+          readinessProbe:
+            httpGet:
+              path: /health/
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /health/
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20

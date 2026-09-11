@@ -1,0 +1,42 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: {{ include "streamingapp.fullname" . }}-admin
+  labels:
+    {{- include "streamingapp.labels" . | nindent 4 }}
+  annotations:
+    alb.ingress.kubernetes.io/group.name: streamingapp
+    alb.ingress.kubernetes.io/group.order: "30"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
+    alb.ingress.kubernetes.io/healthcheck-path: /api/health
+    alb.ingress.kubernetes.io/success-codes: "200"
+    alb.ingress.kubernetes.io/transforms.{{ include "streamingapp.fullname" . }}-admin: |
+      [
+        {
+          "type": "url-rewrite",
+          "urlRewriteConfig": {
+            "rewrites": [
+              {
+                "regex": "^/api/admin/(.*)$",
+                "replace": "/api/$1"
+              }
+            ]
+          }
+        }
+      ]
+
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+          - path: /api/admin
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "streamingapp.fullname" . }}-admin
+                port:
+                  number: {{ .Values.admin.service.port }}

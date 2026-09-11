@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "streamingapp.fullname" . }}-mongodb
+  labels:
+    {{- include "streamingapp.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mongodb
+spec:
+  serviceName: {{ include "streamingapp.fullname" . }}-mongodb
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "streamingapp.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: mongodb
+
+  template:
+    metadata:
+      labels:
+        {{- include "streamingapp.labels" . | nindent 8 }}
+        app.kubernetes.io/component: mongodb
+
+    spec:
+      containers:
+        - name: mongodb
+          image: "{{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+
+          ports:
+            - name: mongodb
+              containerPort: {{ .Values.mongodb.service.targetPort }}
+              protocol: TCP
+
+          volumeMounts:
+            - name: mongodb-data
+              mountPath: /data/db
+
+  volumeClaimTemplates:
+    - metadata:
+        name: mongodb-data
+        labels:
+          {{- include "streamingapp.labels" . | nindent 10 }}
+          app.kubernetes.io/component: mongodb
+      spec:
+        accessModes:
+          - {{ .Values.mongodb.persistence.accessMode }}
+        storageClassName: {{ .Values.mongodb.persistence.storageClass }}
+        resources:
+          requests:
+            storage: {{ .Values.mongodb.persistence.size }}
