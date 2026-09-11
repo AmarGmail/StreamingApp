@@ -1,3 +1,24 @@
+# Streaming App - CI (Preparation)
+
+Use docker compose to build the images
+![docker-compose](screenshots/Docker_Compose.png)
+![Docker-ps](screenshots/docker-compose-ps-containers.png)
+
+Login to ECR and upload images manually
+![Docker-ECR-Login](screenshots/Docker-ECR-login.png)
+
+Validate ECR immutable container images
+![ECR-Repos](screenshots/ECR-repos.png)
+
+Jenkins was installed on an EC2 instance in the same VPC. Pipeline Build #7 with the [Jenkinsfile](Jenkinsfile) was completed as CI on push to the GITHUB repo.
+![Jenkins-pipeline](screenshots/Jenkins-CI-Pipeline.png) 
+
+Webhook confirming build auto-trigger
+![github-trigger](screenshots/GitHub-Webhook-test-and-push.png)
+
+
+
+
 # StreamingApp — Orchestration and Scaling
 A MERN-based streaming application containerized with Docker and deployed on Amazon EKS using Helm, Kubernetes Deployments, Services, persistent storage, and AWS Load Balancer Controller.
 
@@ -66,6 +87,7 @@ A single Helm chart is used for the complete application:
 
 
 The chart provides configurable:
+
 ```
 * Replica counts
 * CPU and memory requests/limits
@@ -473,7 +495,7 @@ After both deployment issues were resolved:
 These fixes were implemented at the Kubernetes/Helm/container deployment layer without modifying the application source code.
 
 
-## Project Objective
+## Project Objectives acheived
 
 This project demonstrates container orchestration and scaling of a multi-service MERN application using:
 
@@ -500,5 +522,7 @@ The implementation demonstrates:
 * Persistent storage
 * ALB-based Ingress routing
 * External service validation
+
+PS: AI tool chatgpt was used to complete the assignment.
 
 
