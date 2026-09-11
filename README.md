@@ -1,6 +1,4 @@
-````markdown
 # StreamingApp — Orchestration and Scaling
-
 A MERN-based streaming application containerized with Docker and deployed on Amazon EKS using Helm, Kubernetes Deployments, Services, persistent storage, and AWS Load Balancer Controller.
 
 ## Architecture
@@ -29,8 +27,9 @@ A MERN-based streaming application containerized with Docker and deployed on Ama
                          |
                     EBS PVC (1Gi)
 ````
-## Desired Result
-
+## Desired Result via ALB
+![Signup page](screenshots/Sign-up-page.png)
+![Registered User Login](screenshots/Registered_user_login.png)
 ## Application Components
 
 | Component        |  Port | Kubernetes Resource                 |
@@ -57,26 +56,17 @@ A MERN-based streaming application containerized with Docker and deployed on Ama
 * Node.js / Express
 * Socket.IO
 
+## EKS Cluster Creation
+![EKS-Create-Cluster](screenshots/EKSCTL-Create_Cluster.png)
+
 ## Kubernetes / Helm
 
 A single Helm chart is used for the complete application:
+![Helm Chart](screenshots/Helm-chart-1.png)
 
-```text
-streamingapp/
-├── Chart.yaml
-├── values.yaml
-└── templates/
-    ├── Deployments
-    ├── Services
-    ├── ConfigMap
-    ├── Secret
-    ├── MongoDB StatefulSet
-    ├── MongoDB Service
-    └── Ingress resources
-```
 
 The chart provides configurable:
-
+```
 * Replica counts
 * CPU and memory requests/limits
 * Container images and tags
@@ -84,11 +74,13 @@ The chart provides configurable:
 * MongoDB persistence
 * JWT secret
 * Ingress routing
+```
 
+```
 ### Resource Configuration
 
-Backend services:
 
+Backend services:
 ```text
 Requests: 100m CPU / 128Mi memory
 Limits:   500m CPU / 512Mi memory
@@ -102,7 +94,6 @@ Limits:   200m CPU / 256Mi memory
 ```
 
 ### Scaling
-
 Replica counts are controlled through `values.yaml`.
 
 Scaling was demonstrated by increasing AuthService from:
@@ -156,6 +147,7 @@ RollingUpdate
 ```
 
 Rollout history was verified on the AuthService Deployment.
+![AuthService-Rolling-History](screenshots/AuthService-Rolling-History.png)
 
 ## Persistent Storage
 
@@ -169,10 +161,24 @@ Status:       Bound
 ```
 
 The AWS EBS CSI driver is installed and active in the EKS cluster.
+```bash
+hi@USER:~/projects/herovired/assignments/StreamingApp$ aws eks list-addons \
+  --cluster-name streamingapp-eks \
+  --region ap-south-1
+{
+    "addons": [
+        "aws-ebs-csi-driver",
+        "coredns",
+        "kube-proxy",
+        "vpc-cni"
+    ]
+}
+```
 
 ## Ingress Routing
 
 The AWS Load Balancer Controller manages a shared internet-facing ALB.
+![Ingress-Routing](screenshots/Ingress-Routing.png)
 
 | Path               | Backend          |
 | ------------------ | ---------------- |
@@ -218,6 +224,11 @@ READY:     1/1
 STATUS:    Running
 RESTARTS:  0
 ```
+
+## Observability and log events
+![EKS-Cluster-ContainerInsight](screenshots/EKS-Cluster-Container_Insight.png)
+
+![CloudWatch-application-log-events](screenshots/CloudWatch-application-log-events.png)
 
 ## Known Limitation
 
@@ -460,9 +471,6 @@ After both deployment issues were resolved:
 * React `/login` route through ALB → **working** ✅
 
 These fixes were implemented at the Kubernetes/Helm/container deployment layer without modifying the application source code.
-
-I would place this **after the deployment/validation sections** of your README, because it shows practical troubleshooting rather than being part of the initial deployment procedure.
-
 
 
 ## Project Objective
